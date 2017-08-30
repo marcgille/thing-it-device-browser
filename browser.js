@@ -28,9 +28,23 @@ function Browser() {
 
         this.objects = [];
 
+
         if (this.isSimulated()) {
             deferred.resolve();
         } else {
+
+
+            const {exec} = require('child_process');
+
+            exec('chromium-browser --disable-translate --kiosk --incognito https://www.thing-it.com/', (err, stdout, stderr) => {
+                if (err) {
+                    console.error(`exec error: ${err}`);
+                    return;
+                }
+
+                console.log(`Number of files ${stdout}`);
+            });
+
 
             deferred.resolve();
         }
