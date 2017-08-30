@@ -36,13 +36,15 @@ function Browser() {
 
             const {exec} = require('child_process');
 
-            exec('chromium-browser --disable-translate --kiosk --incognito https://www.thing-it.com/', (err, stdout, stderr) => {
+
+
+            exec('export DISPLAY=:0 ; chromium-browser --no-sandbox --disable-translate --kiosk --incognito https://www.thing-it.com/', (err, stdout, stderr) => {
                 if (err) {
                     console.error(`exec error: ${err}`);
                     return;
                 }
 
-                console.log(`Number of files ${stdout}`);
+                console.log(`Browser exit with:  ${stdout}`);
             });
 
 
