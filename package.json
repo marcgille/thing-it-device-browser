@@ -4,12 +4,16 @@
   "description": "[thing-it-node] Device Plugin for a custom Website",
   "authors": "Julian Seibert",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slotto/thing-it-device-browser"
+  },
   "keywords": [
     "IoT",
     "thing-it"
   ],
   "dependencies": {
-    "ps-tree:": "1.1.0"
+    "ps-tree": "^1.1.0"
   },
   "devDependencies": {
     "thing-it-test": "0.0.13"
