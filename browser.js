@@ -78,11 +78,12 @@ function Browser() {
         //this.state.markupMode = true;
 
         if (this.isSimulated()) {
+
             deferred.resolve();
+
         } else {
 
             let spawn = require('child_process').spawn;
-
             var urltoload = "";
 
             if (this.state.markupMode) {
