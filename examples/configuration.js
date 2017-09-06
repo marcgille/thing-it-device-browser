@@ -3,7 +3,9 @@ module.exports = {
     label: "Home",
     id: "home",
     devices: [{
-        "configuration": {},
+        "configuration": {
+            "url": "https://www.thing-it.com/thing-it/display.html?tip=0.8#!/?mesh=58f71098a124543ca4361a8a"
+        },
         "label": "Browser",
         "id": "browser",
         "class": "Device",

@@ -22,6 +22,13 @@ module.exports = {
                     id: "integer"
                 },
                 defaultValue: "255"
+            }, {
+                id: "markupMode",
+                label: "Markup Mode",
+                type: {
+                    id: "boolean"
+                },
+                defaultValue: "false"
             }
         ],
         configuration: [
@@ -30,8 +37,19 @@ module.exports = {
                 label: "LCD Rotate",
                 type: {
                     id: "integer"
-                },
-                defaultValue: "0"
+                }
+            }, {
+                id: "url",
+                label: "URL",
+                type: {
+                    id: "string"
+                }
+            }, {
+                id: "markup",
+                label: "Markup",
+                type: {
+                    id: "html"
+                }
             }
         ]
     },
@@ -56,12 +74,23 @@ function Browser() {
 
         //this.objects = [];
 
+        //this.configuration.url = "https://www.thing-it.com/thing-it/display.html?tip=0.8#!/?mesh=58f71098a124543ca4361a8a";
+        //this.state.markupMode = true;
 
         if (this.isSimulated()) {
             deferred.resolve();
         } else {
 
             let spawn = require('child_process').spawn;
+
+            var urltoload = "";
+
+            if (this.state.markupMode) {
+                urltoload = "file:///data/thing-it-work/browser/markup-example.html";
+
+            } else {
+                urltoload = String(this.configuration.url);
+            }
 
 
             //if xserver already running -> release
@@ -95,7 +124,7 @@ function Browser() {
                 '--kiosk ' +
                 '--incognito ' +
                 '--test-type ' +
-                'https://www.thing-it.com/thing-it/display.html?tip=0.8#!/?mesh=58f71098a124543ca4361a8a',
+                String(urltoload),
                 {
                     shell: true
                 }
@@ -126,7 +155,6 @@ function Browser() {
             //  setTimeout(function () {
             //      this.restart();
             //  }.bind(this), 50000);
-
 
 
             //Test Brightness
@@ -204,7 +232,7 @@ function Browser() {
 
         kill(this.chromium.pid);
 
-        console.log(`killing child process`);
+        console.log(`killing chromium process`);
 
 
     };
@@ -217,7 +245,7 @@ function Browser() {
         console.log(`invoke stop`);
         this.stop();
 
-        console.log(`invoke start`);
+        this.logDebug(`invoke start`);
         this.start();
 
     };
