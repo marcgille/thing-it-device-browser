@@ -8,7 +8,9 @@
     "IoT",
     "thing-it"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "ps-tree:":"1.1.0"
+  },
   "devDependencies": {
     "thing-it-test": "0.0.13"
   }
