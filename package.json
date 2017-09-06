@@ -1,6 +1,6 @@
 {
   "name": "thing-it-device-browser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "[thing-it-node] Device Plugin for a custom Website",
   "authors": "Julian Seibert",
   "license": "MIT",
