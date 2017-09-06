@@ -13,7 +13,8 @@
     "thing-it"
   ],
   "dependencies": {
-    "ps-tree": "^1.1.0"
+    "ps-tree": "^1.1.0",
+    "q": "^1.1.2"
   },
   "devDependencies": {
     "thing-it-test": "0.0.13"
