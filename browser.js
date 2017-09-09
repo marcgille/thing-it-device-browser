@@ -72,10 +72,9 @@ function Browser() {
     Browser.prototype.start = function () {
         var deferred = q.defer();
 
-        //this.objects = [];
 
-        //this.configuration.url = "https://www.thing-it.com/thing-it/display.html?tip=0.8#!/?mesh=58f71098a124543ca4361a8a";
-        //this.state.markupMode = true;
+        //DEBUG ENABLE
+        this.logLevel = 'debug';
 
         if (this.isSimulated()) {
 
@@ -84,57 +83,71 @@ function Browser() {
         } else {
 
             let spawn = require('child_process').spawn;
-            var urltoload = "";
+            let urltoload = "";
 
             if (this.state.markupMode) {
+                //TODO specify right destination
                 urltoload = "file:///data/thing-it-work/browser/markup-example.html";
-
             } else {
                 urltoload = String(this.configuration.url);
             }
 
 
             //if xserver already running -> release
-            exec('rm /tmp/.X0-lock', (err, stdout, stderr) => {
+            exec('pkill Xorg', (err, stdout, stderr) => {
                 if (err) {
-                    console.error(`exec error: ${err}`);
+                    this.logDebug(`Nothing to kill with Raspian Lite command: ${err}`);
+
+                    exec('rm /tmp/.X0-lock', (err, stdout, stderr) => {
+                        if (err) {
+                            this.logDebug(`Really no xServer to Kill ${err}`);
+                            return;
+                        }
+                        this.logDebug(`xServer released on Docker:  ${stdout}`);
+                    });
+
                     return;
                 }
-                console.log(`xServer release:  ${stdout}`);
+
+                this.logDebug(`xServer released on Raspbian Lite:  ${stdout}`);
             });
 
 
             //lock new xServer on DISPLAY : 0 and disable cursor
-            exec('/usr/bin/X :0 -nocursor', (err, stdout, stderr) => {
-                if (err) {
-                    console.error(`exec error: ${err}`);
-                    return;
-                }
-                console.log(`xServer lock:  ${stdout}`);
+            setTimeout(function () {
+                exec('export DISPLAY=:0; Xorg -nocursor', (err, stdout, stderr) => {
+                    //exec('/usr/bin/X :0 -nocursor', (err, stdout, stderr) => {
+                    if (err) {
+                        this.logDebug(`exec error: ${err}`);
+                        return;
+                    }
+                    this.logDebug(`xServer started:  ${stdout}`);
 
-            });
+                });
+            }.bind(this), 5000);
 
 
-            /**
-             * Start Chromium on Display 0
-             */
-            this.chromium = spawn('export DISPLAY=:0 && ' +
-                'chromium-browser ' +
-                '--no-sandbox ' +
-                '--disable-translate ' +
-                '--kiosk ' +
-                '--incognito ' +
-                '--test-type ' +
-                String(urltoload),
-                {
-                    shell: true
-                }
-            );
+            //Start Chromium on Display 0
+            setTimeout(function () {
+                this.logDebug(`Starting CHROMIUM BROWSER with URL: `, String(urltoload));
 
-            this.chromium.on('close', (code) => {
-                console.log(`Chromium child process exited with code ${code}`);
-                //TODO Invoke restart after browser exited unexpected?
-            });
+                this.chromium = spawn('export DISPLAY=:0 && chromium-browser ',
+                    [
+                        '--no-sandbox ' +
+                        '--disable-translate ' +
+                        '--kiosk ' +
+                        '--incognito ' +
+                        '--test-type ' +
+                        '"' + String(urltoload) + '"',
+                    ], {shell: true}
+                );
+
+                this.chromium.on('close', (code) => {
+                    this.logDebug(`Chromium child process exited with code ${code}`);
+                    //TODO Invoke restart after browser exited unexpected?
+                });
+
+            }.bind(this), 10000);
 
 
             //disable power saving on D 0
@@ -142,20 +155,22 @@ function Browser() {
                 exec('export DISPLAY=:0; sudo xset s off; sudo xset -dpms; sudo xset s noblank', (err, stdout, stderr) => {
 
                     if (err) {
-                        console.error(`exec error: ${err}`);
+                        this.logDebug(`Disable power saving NOT successfull. ${err}`);
                         return;
                     }
 
-                    console.log(`Power saving disabled:  ${stdout}`);
+                    this.logDebug(`Power saving successfully disabled.  ${stdout}`);
 
                 });
-            }, 10000);
+            }.bind(this), 15000);
+
+
 
 
             //Test restart service
-            //  setTimeout(function () {
-            //      this.restart();
-            //  }.bind(this), 50000);
+            // setTimeout(function () {
+            //     this.restart();
+            // }.bind(this), 50000);
 
 
             //Test Brightness
@@ -233,7 +248,7 @@ function Browser() {
 
         kill(this.chromium.pid);
 
-        console.log(`killing chromium process`);
+        this.logDebug(`Killing chromium process`);
 
 
     };
@@ -242,11 +257,9 @@ function Browser() {
      *
      */
     Browser.prototype.restart = function () {
+        this.logDebug(`Invoke Browser restart`);
 
-        console.log(`invoke stop`);
         this.stop();
-
-        this.logDebug(`invoke start`);
         this.start();
 
     };
@@ -258,10 +271,10 @@ function Browser() {
 
         exec('echo ' + this.state.lcdBrightness + ' > /sys/class/backlight/rpi_backlight/brightness', (err, stdout, stderr) => {
             if (err) {
-                console.error(`exec error: ${err}`);
+                this.logDebug(`exec error: ${err}`);
                 return;
             }
-            console.log(`Set LCD Brightness to: ` + this.state.lcdBrightness + ' ' + stdout);
+            this.logDebug(`Set LCD Brightness to: ` + this.state.lcdBrightness + ' ' + stdout);
 
         });
     };
