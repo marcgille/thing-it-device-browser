@@ -164,9 +164,6 @@ function Browser() {
                 });
             }.bind(this), 15000);
 
-
-
-
             //Test restart service
             // setTimeout(function () {
             //     this.restart();
@@ -257,6 +254,7 @@ function Browser() {
      *
      */
     Browser.prototype.restart = function () {
+
         this.logDebug(`Invoke Browser restart`);
 
         this.stop();
