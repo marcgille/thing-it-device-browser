@@ -38,7 +38,7 @@ sudo apt-get -y update
 sudo apt-get -y install lsb-release xserver-xorg xorg jwm chromium-browser libgtk-3-dev
 ```
 
-Now you are ready to Add an Browser device to your Mesh.
+Now you are ready to add and configure a **[thing-it-device-browser]** in your Mesh.
 
 
 ## User Interface
